@@ -19,7 +19,6 @@ admin = APIRouter(
 )
 
 
-# user route >>>
 class Rolecheker:
     role = ['admin']
 
@@ -34,7 +33,7 @@ class Rolecheker:
 
 allowed_roles = Rolecheker()
 
-
+# user route >>>
 @user.get('/information', response_model=UserRead)
 async def get_info(user: User = Depends(current_user)):
     if user is not None:
@@ -47,9 +46,9 @@ async def get_info(user: User = Depends(current_user)):
 async def get_salary(user: User = Depends(current_user), session: AsyncSession = Depends(get_async_session)):
     try:
         salary_ = await session.get(User, user.id)
-        return salary_.salary
+        return f'My salary is {salary_.salary}'
     except:
-        raise HTTPException(status_code=200, detail='login to your account')
+        raise HTTPException(status_code=400, detail='login to your account')
 
 
 # admin route >>>
@@ -59,7 +58,24 @@ async def get_salary(user: User = Depends(current_user), session: AsyncSession =
 async def get_other_salary(user_id: int, session: AsyncSession = Depends(get_async_session)):
     try:
         salary_ = await session.get(User, user_id)
-        return salary_.salary
+        return f'{salary_.first_name} salary is {salary_.salary}'
+    except:
+        raise HTTPException(status_code=400, detail='user not found, try again >:(')
+
+
+@admin.get('/date', dependencies=[Depends(allowed_roles)])
+async def get_other_salary(user_id: int, session: AsyncSession = Depends(get_async_session)):
+    try:
+        date_ = await session.get(User, user_id)
+        return f'{date_.first_name} date is {date_.date}'
+    except:
+        raise HTTPException(status_code=400, detail='user not found, try again >:(')
+
+@admin.get('/user/data', dependencies=[Depends(allowed_roles)], response_model=UserRead)
+async def get_other_salary(user_id: int, session: AsyncSession = Depends(get_async_session)):
+    try:
+        user_ = await session.get(User, user_id)
+        return user_
     except:
         raise HTTPException(status_code=400, detail='user not found, try again >:(')
 
@@ -71,7 +87,7 @@ async def change_salary(user_id: int, new_salary: int, session: AsyncSession = D
     # if salary_ is not None:
         salary_.salary = new_salary
         await session.commit()
-        return 'successful change'
+        return 'successful change salary'
     except:
         raise HTTPException(status_code=400, detail="has no salary")
 
@@ -82,7 +98,7 @@ async def change_date(user_id: int, new_date: str, session: AsyncSession = Depen
         date_ = await session.get(User, user_id)
         date_.date = new_date
         await session.commit()
-        return 'successful change'
+        return 'successful change date'
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"has no promotion date {e}")
 

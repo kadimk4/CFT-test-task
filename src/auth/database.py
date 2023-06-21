@@ -8,9 +8,10 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = 'postgresql+asyncpg://postgres:2321@localhost:5432/postgres'
-DATABASE_URL_SYNC = 'postgresql+psycopg2://postgres:2321@localhost:5432/postgres'
+DATABASE_URL = 'postgresql+asyncpg://username:password@localhost:port/dbname'
+DATABASE_URL_SYNC = 'postgresql+psycopg2://username:password@localhost:port/dbname'
 Base: DeclarativeMeta = declarative_base()
+
 
 class User(Base):
     __tablename__ = 'users'
