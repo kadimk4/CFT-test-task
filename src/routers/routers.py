@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from src.auth.database import User, get_async_session, get_sync_session
 from src.auth.schemas import UserRead
-from src.routers.current_users import current_user, current_admin
+from src.routers.current_users import current_user
 
 user = APIRouter(
     prefix='/user',
@@ -64,7 +64,7 @@ async def get_other_salary(user_id: int, session: AsyncSession = Depends(get_asy
 
 
 @admin.get('/date', dependencies=[Depends(allowed_roles)])
-async def get_other_salary(user_id: int, session: AsyncSession = Depends(get_async_session)):
+async def get_other_date(user_id: int, session: AsyncSession = Depends(get_async_session)):
     try:
         date_ = await session.get(User, user_id)
         return f'{date_.first_name} date is {date_.date}'
@@ -72,7 +72,7 @@ async def get_other_salary(user_id: int, session: AsyncSession = Depends(get_asy
         raise HTTPException(status_code=400, detail='user not found, try again >:(')
 
 @admin.get('/user/data', dependencies=[Depends(allowed_roles)], response_model=UserRead)
-async def get_other_salary(user_id: int, session: AsyncSession = Depends(get_async_session)):
+async def get_user_data(user_id: int, session: AsyncSession = Depends(get_async_session)):
     try:
         user_ = await session.get(User, user_id)
         return user_
